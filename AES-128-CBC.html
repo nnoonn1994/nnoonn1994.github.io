@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVBox AES-128-CBC 加密解密工具</title>
+    <style>
+        :root {
+            --primary-color: #4a6baf;
+            --secondary-color: #3a5a9f;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --border-radius: 6px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            font-size: 16px;
+        }
+        
+        .tool-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 107, 175, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+        }
+        
+        .result-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .copy-btn {
+            background-color: #6c757d;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background-color: #5a6268;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .alert-info {
+            background-color: #e7f5ff;
+            border-left-color: #4dabf7;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TVBox AES-128-CBC 加密解密工具</h1>
+            <p class="subtitle">支持AES-128-CBC模式的加密与解密，默认使用16位密钥和IV</p>
+        </header>
+        
+        <div class="alert alert-info">
+            <strong>使用说明：</strong> 输入16位密钥和IV（初始化向量），然后输入需要加密或解密的文本，点击相应按钮即可。
+        </div>
+        
+        <div class="tool-section">
+            <div class="section-title">
+                <i>🔑</i> 密钥设置
+            </div>
+            <div class="form-group">
+                <label for="key">密钥 (16位字符)</label>
+                <input type="password" id="key" placeholder="输入16位密钥" value="1234567890123456" maxlength="16">
+            </div>
+            <div class="form-group">
+                <label for="iv">IV (16位初始化向量)</label>
+                <input type="password" id="iv" placeholder="输入16位IV" value="1234567890123456" maxlength="16">
+            </div>
+        </div>
+        
+        <div class="tool-section">
+            <div class="section-title">
+                <i>📝</i> 输入文本
+            </div>
+            <div class="form-group">
+                <label for="inputText">输入需要加密或解密的文本</label>
+                <textarea id="inputText" placeholder="在此输入文本..."></textarea>
+            </div>
+            
+            <div class="btn-group">
+                <button id="encryptBtn" class="btn btn-success">加密文本</button>
+                <button id="decryptBtn" class="btn btn-danger">解密文本</button>
+                <button id="clearBtn" class="btn">清空</button>
+            </div>
+        </div>
+        
+        <div class="tool-section">
+            <div class="section-title">
+                <i>🔍</i> 结果输出
+            </div>
+            <div class="result-container">
+                <div class="result-title">处理结果</div>
+                <div id="outputText" style="word-break: break-all;"></div>
+                <button id="copyBtn" class="copy-btn">复制结果</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>TVBox AES-128-CBC 加密解密工具 &copy; 2023 | 适用于TVBox配置加密解密</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const keyInput = document.getElementById('key');
+            const ivInput = document.getElementById('iv');
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const encryptBtn = document.getElementById('encryptBtn');
+            const decryptBtn = document.getElementById('decryptBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            // 加密函数
+            function encrypt(text, key, iv) {
+                try {
+                    const keyBytes = CryptoJS.enc.Utf8.parse(key);
+                    const ivBytes = CryptoJS.enc.Utf8.parse(iv);
+                    
+                    const encrypted = CryptoJS.AES.encrypt(text, keyBytes, {
+                        iv: ivBytes,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7
+                    });
+                    
+                    return encrypted.toString();
+                } catch (e) {
+                    return '加密失败: ' + e.message;
+                }
+            }
+            
+            // 解密函数
+            function decrypt(text, key, iv) {
+                try {
+                    const keyBytes = CryptoJS.enc.Utf8.parse(key);
+                    const ivBytes = CryptoJS.enc.Utf8.parse(iv);
+                    
+                    const decrypted = CryptoJS.AES.decrypt(text, keyBytes, {
+                        iv: ivBytes,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7
+                    });
+                    
+                    return decrypted.toString(CryptoJS.enc.Utf8);
+                } catch (e) {
+                    return '解密失败: ' + e.message;
+                }
+            }
+            
+            // 加密按钮点击事件
+            encryptBtn.addEventListener('click', function() {
+                const key = keyInput.value;
+                const iv = ivInput.value;
+                const text = inputText.value;
+                
+                if (!key || !iv) {
+                    outputText.textContent = '错误: 密钥和IV不能为空';
+                    return;
+                }
+                
+                if (key.length !== 16 || iv.length !== 16) {
+                    outputText.textContent = '错误: 密钥和IV必须为16位字符';
+                    return;
+                }
+                
+                if (!text) {
+                    outputText.textContent = '错误: 请输入要加密的文本';
+                    return;
+                }
+                
+                const encrypted = encrypt(text, key, iv);
+                outputText.textContent = encrypted;
+            });
+            
+            // 解密按钮点击事件
+            decryptBtn.addEventListener('click', function() {
+                const key = keyInput.value;
+                const iv = ivInput.value;
+                const text = inputText.value;
+                
+                if (!key || !iv) {
+                    outputText.textContent = '错误: 密钥和IV不能为空';
+                    return;
+                }
+                
+                if (key.length !== 16 || iv.length !== 16) {
+                    outputText.textContent = '错误: 密钥和IV必须为16位字符';
+                    return;
+                }
+                
+                if (!text) {
+                    outputText.textContent = '错误: 请输入要解密的文本';
+                    return;
+                }
+                
+                const decrypted = decrypt(text, key, iv);
+                outputText.textContent = decrypted;
+            });
+            
+            // 清空按钮点击事件
+            clearBtn.addEventListener('click', function() {
+                inputText.value = '';
+                outputText.textContent = '';
+            });
+            
+            // 复制按钮点击事件
+            copyBtn.addEventListener('click', function() {
+                const text = outputText.textContent;
+                if (!text) return;
+                
+                navigator.clipboard.writeText(text).then(function() {
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = '已复制!';
+                    setTimeout(function() {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                }).catch(function(err) {
+                    console.error('复制失败: ', err);
+                });
+            });
+            
+            // 显示默认示例
+            inputText.placeholder = "例如: http://example.com/xxx.json";
+        });
+    </script>
+</body>
+</html>
