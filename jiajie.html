@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>TVBox JSON 加密解密工具</title>
+    <style>
+        :root {
+            --primary-color: #4a6baf;
+            --secondary-color: #f5f7fa;
+            --accent-color: #ff7043;
+            --text-color: #333;
+            --light-text: #666;
+            --border-color: #ddd;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 40px);
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 25px;
+            flex: 1;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title svg {
+            margin-right: 8px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        textarea, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s;
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 107, 175, 0.2);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        
+        button svg {
+            margin-right: 6px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5a9f;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e5eb;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background-color: #f45c2c;
+        }
+        
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: var(--secondary-color);
+            border: 1px dashed var(--border-color);
+            position: relative;
+            min-height: 100px;
+        }
+        
+        .result-label {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: white;
+            padding: 0 8px;
+            font-size: 12px;
+            color: var(--light-text);
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            font-size: 12px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-color);
+        }
+        
+        .copy-btn:hover {
+            background-color: white;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+            display: block;
+        }
+        
+        .error {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--error-color);
+            display: block;
+        }
+        
+        .input-with-btn {
+            position: relative;
+        }
+        
+        .clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: none;
+            border: none;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .clear-btn:hover {
+            color: var(--text-color);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: var(--light-text);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                min-height: auto;
+            }
+            
+            button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TVBox JSON 加密解密工具</h1>
+            <div class="subtitle">AES-128-CBC + Base64 编码 | 无需配置PK</div>
+        </header>
+        
+        <div class="main-content">
+            <div class="section">
+                <div class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                    </svg>
+                    JSON 数据
+                </div>
+                
+                <div class="input-group">
+                    <label for="json-input">输入JSON文本</label>
+                    <div class="input-with-btn">
+                        <textarea id="json-input" placeholder="在此输入需要加密或解密的JSON文本..."></textarea>
+                        <button class="clear-btn" id="clear-json" title="清空">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="key-input">密钥 (16字符)</label>
+                    <input type="text" id="key-input" placeholder="输入16字符的AES密钥" maxlength="16">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn-primary" id="encrypt-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        加密
+                    </button>
+                    <button class="btn-accent" id="decrypt-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                        </svg>
+                        解密
+                    </button>
+                    <button class="btn-secondary" id="format-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                        格式化
+                    </button>
+                </div>
+                
+                <div id="status-message" class="status-message"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    结果输出
+                </div>
+                
+                <div class="result-box">
+                    <div class="result-label">处理结果</div>
+                    <div id="result-output" style="white-space: pre-wrap; word-wrap: break-word; min-height: 60px;"></div>
+                    <button class="copy-btn" id="copy-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        复制
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>TVBox JSON 工具 &copy; 2023 | 使用AES-128-CBC算法和Base64编码</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jsonInput = document.getElementById('json-input');
+            const keyInput = document.getElementById('key-input');
+            const resultOutput = document.getElementById('result-output');
+            const encryptBtn = document.getElementById('encrypt-btn');
+            const decryptBtn = document.getElementById('decrypt-btn');
+            const formatBtn = document.getElementById('format-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const clearJsonBtn = document.getElementById('clear-json');
+            const statusMessage = document.getElementById('status-message');
+            
+            // 清空JSON输入
+            clearJsonBtn.addEventListener('click', function() {
+                jsonInput.value = '';
+                jsonInput.focus();
+                showStatus('输入已清空', 'success');
+            });
+            
+            // 加密JSON
+            encryptBtn.addEventListener('click', function() {
+                try {
+                    const jsonText = jsonInput.value.trim();
+                    const key = keyInput.value.trim();
+                    
+                    if (!jsonText) {
+                        showStatus('请输入JSON文本', 'error');
+                        return;
+                    }
+                    
+                    if (!key || key.length !== 16) {
+                        showStatus('密钥必须为16个字符', 'error');
+                        return;
+                    }
+                    
+                    // 验证JSON格式
+                    try {
+                        JSON.parse(jsonText);
+                    } catch (e) {
+                        showStatus('JSON格式无效: ' + e.message, 'error');
+                        return;
+                    }
+                    
+                    const encrypted = encryptAES(jsonText, key);
+                    resultOutput.textContent = encrypted;
+                    showStatus('加密成功', 'success');
+                } catch (e) {
+                    showStatus('加密失败: ' + e.message, 'error');
+                }
+            });
+            
+            // 解密JSON
+            decryptBtn.addEventListener('click', function() {
+                try {
+                    const encryptedText = jsonInput.value.trim();
+                    const key = keyInput.value.trim();
+                    
+                    if (!encryptedText) {
+                        showStatus('请输入加密文本', 'error');
+                        return;
+                    }
+                    
+                    if (!key || key.length !== 16) {
+                        showStatus('密钥必须为16个字符', 'error');
+                        return;
+                    }
+                    
+                    const decrypted = decryptAES(encryptedText, key);
+                    
+                    // 验证解密结果是否为有效JSON
+                    try {
+                        JSON.parse(decrypted);
+                    } catch (e) {
+                        showStatus('解密失败: 结果不是有效的JSON - 可能是密钥错误', 'error');
+                        return;
+                    }
+                    
+                    resultOutput.textContent = formatJson(decrypted);
+                    showStatus('解密成功', 'success');
+                } catch (e) {
+                    showStatus('解密失败: ' + e.message, 'error');
+                }
+            });
+            
+            // 格式化JSON
+            formatBtn.addEventListener('click', function() {
+                try {
+                    const jsonText = jsonInput.value.trim();
+                    
+                    if (!jsonText) {
+                        showStatus('请输入JSON文本', 'error');
+                        return;
+                    }
+                    
+                    const formatted = formatJson(jsonText);
+                    resultOutput.textContent = formatted;
+                    showStatus('格式化成功', 'success');
+                } catch (e) {
+                    showStatus('格式化失败: ' + e.message, 'error');
+                }
+            });
+            
+            // 复制结果
+            copyBtn.addEventListener('click', function() {
+                const resultText = resultOutput.textContent;
+                
+                if (!resultText) {
+                    showStatus('没有内容可复制', 'error');
+                    return;
+                }
+                
+                navigator.clipboard.writeText(resultText)
+                    .then(() => showStatus('已复制到剪贴板', 'success'))
+                    .catch(err => showStatus('复制失败: ' + err, 'error'));
+            });
+            
+            // AES加密函数
+            function encryptAES(text, key) {
+                const keyBytes = CryptoJS.enc.Utf8.parse(key);
+                const ivBytes = CryptoJS.enc.Utf8.parse(key); // 使用key作为IV
+                
+                const encrypted = CryptoJS.AES.encrypt(text, keyBytes, {
+                    iv: ivBytes,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+                
+                return encrypted.toString();
+            }
+            
+            // AES解密函数
+            function decryptAES(ciphertext, key) {
+                const keyBytes = CryptoJS.enc.Utf8.parse(key);
+                const ivBytes = CryptoJS.enc.Utf8.parse(key); // 使用key作为IV
+                
+                const decrypted = CryptoJS.AES.decrypt(ciphertext, keyBytes, {
+                    iv: ivBytes,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+                
+                return decrypted.toString(CryptoJS.enc.Utf8);
+            }
+            
+            // 格式化JSON
+            function formatJson(jsonText) {
+                try {
+                    const obj = JSON.parse(jsonText);
+                    return JSON.stringify(obj, null, 2);
+                } catch (e) {
+                    throw new Error('无效的JSON格式');
+                }
+            }
+            
+            // 显示状态消息
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message ' + type;
+                
+                // 3秒后自动消失
+                setTimeout(() => {
+                    statusMessage.className = 'status-message';
+                    statusMessage.textContent = '';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
