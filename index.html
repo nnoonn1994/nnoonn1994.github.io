@@ -512,6 +512,10 @@
                 <input type="text" id="vod-api" placeholder="API地址">
             </div>
             <div class="config-row">
+                <div class="config-label">JAR:</div>
+                <input type="text" id="vod-jar" placeholder="自定义JAR包地址(不需要留空即可)">
+            </div>
+            <div class="config-row">
                 <div class="config-label">可搜索:</div>
                 <select id="vod-searchable">
                     <option value="0">0-不可以</option>
@@ -1049,6 +1053,7 @@ cms.qdwght.com</textarea>
             const adDomainsTextarea = document.getElementById('ad-domains');
             const globalSpiderInput = document.getElementById('global-spider');
             const vodExtInput = document.getElementById('vod-ext');
+            const vodJarInput = document.getElementById('vod-jar');
             const addIjkOptionBtn = document.querySelector('.add-ijk-option');
             const updateIjkOptionBtn = document.querySelector('.update-ijk-option');
             const cancelIjkEditBtn = document.querySelector('.cancel-ijk-edit');
@@ -1085,6 +1090,7 @@ cms.qdwght.com</textarea>
                 const key = document.getElementById('vod-key').value.trim();
                 const name = document.getElementById('vod-name').value.trim();
                 const api = document.getElementById('vod-api').value.trim();
+                const jar = vodJarInput.value.trim();
                 const ext = vodExtInput.value.trim();
                 
                 if (!key || !name || !api) {
@@ -1101,6 +1107,10 @@ cms.qdwght.com</textarea>
                     quickSearch: parseInt(document.getElementById('vod-quickSearch').value),
                     filterable: parseInt(document.getElementById('vod-filterable').value)
                 };
+                
+                if (jar) {
+                    newSite.jar = jar;
+                }
                 
                 if (ext) {
                     newSite.ext = ext;
@@ -1124,6 +1134,7 @@ cms.qdwght.com</textarea>
                 const key = document.getElementById('vod-key').value.trim();
                 const name = document.getElementById('vod-name').value.trim();
                 const api = document.getElementById('vod-api').value.trim();
+                const jar = vodJarInput.value.trim();
                 const ext = vodExtInput.value.trim();
                 
                 if (!key || !name || !api) {
@@ -1140,6 +1151,10 @@ cms.qdwght.com</textarea>
                     quickSearch: parseInt(document.getElementById('vod-quickSearch').value),
                     filterable: parseInt(document.getElementById('vod-filterable').value)
                 };
+                
+                if (jar) {
+                    updatedSite.jar = jar;
+                }
                 
                 if (ext) {
                     updatedSite.ext = ext;
@@ -1173,6 +1188,7 @@ cms.qdwght.com</textarea>
                 document.getElementById('vod-key').value = '';
                 document.getElementById('vod-name').value = '';
                 document.getElementById('vod-api').value = '';
+                vodJarInput.value = '';
                 vodExtInput.value = '';
             }
 
@@ -1633,6 +1649,7 @@ cms.qdwght.com</textarea>
                         categoriesHtml = `<p>分类: ${site.categories.join(', ')}</p>`;
                     }
                     
+                    let jarHtml = site.jar ? `<p>JAR: ${site.jar}</p>` : '';
                     let extHtml = site.ext ? `<p>Ext: ${site.ext}</p>` : '';
                     
                     item.innerHTML = `
@@ -1640,6 +1657,7 @@ cms.qdwght.com</textarea>
                         <div style="flex: 1;">
                             <h4>${site.name} (${site.key})</h4>
                             <p>API: ${site.api}</p>
+                            ${jarHtml}
                             <p>类型: ${getTypeName(site.type)} | 可搜索: ${site.searchable} | 可快速搜索: ${site.quickSearch} | 可筛选: ${site.filterable}</p>
                             ${extHtml}
                             ${categoriesHtml}
@@ -1677,6 +1695,7 @@ cms.qdwght.com</textarea>
                         document.getElementById('vod-name').value = site.name;
                         document.getElementById('vod-type').value = site.type;
                         document.getElementById('vod-api').value = site.api;
+                        vodJarInput.value = site.jar || '';
                         document.getElementById('vod-searchable').value = site.searchable;
                         document.getElementById('vod-quickSearch').value = site.quickSearch;
                         document.getElementById('vod-filterable').value = site.filterable;
@@ -2105,6 +2124,7 @@ cms.qdwght.com</textarea>
                 updateConfigJson();
             });
             adDomainsTextarea.addEventListener('input', updateConfigJson);
+            vodJarInput.addEventListener('input', updateConfigJson);
 
             // 初始化表单值
             function initFormValues() {
