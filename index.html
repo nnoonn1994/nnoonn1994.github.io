@@ -573,22 +573,22 @@
             <h3>直播源配置</h3>
             <div class="config-row">
                 <div class="config-label">组名:</div>
-                <input type="text" id="live-group" placeholder="组名">
+                <input type="text" id="live-group" placeholder="Group">
             </div>
             <div class="config-row">
-                <div class="config-label">频道名称:</div>
-                <input type="text" id="live-channel-name" placeholder="频道名称">
+                <div class="config-label">频道名:</div>
+                <input type="text" id="live-channel-name" placeholder="name">
             </div>
             <div class="config-row">
-                <div class="config-label">直播源URL:</div>
+                <div class="config-label">直播源Urls:</div>
                 <div style="flex: 1;">
                     <div class="url-list" id="live-urls-list">
                         <div class="url-item">
-                            <input type="text" class="live-url" placeholder="直播源URL">
+                            <input type="text" class="live-url" placeholder="直播源Urls">
                             <button class="remove-url button-cancel">删除</button>
                         </div>
                     </div>
-                    <button id="add-url-btn" class="button-success" style="margin-top: 10px;">添加URL</button>
+                    <button id="add-url-btn" class="button-success" style="margin-top: 10px;">添加Urls</button>
                 </div>
             </div>
             <div class="button-group">
@@ -1192,12 +1192,12 @@ cms.qdwght.com</textarea>
                 vodExtInput.value = '';
             }
 
-            // 添加URL按钮
+            // 添加Urls按钮
             addUrlBtn.addEventListener('click', function() {
                 const urlItem = document.createElement('div');
                 urlItem.className = 'url-item';
                 urlItem.innerHTML = `
-                    <input type="text" class="live-url" placeholder="直播源URL">
+                    <input type="text" class="live-url" placeholder="直播源Urls">
                     <button class="remove-url button-cancel">删除</button>
                 `;
                 liveUrlsList.appendChild(urlItem);
@@ -1312,7 +1312,7 @@ cms.qdwght.com</textarea>
                 liveChannelNameInput.value = '';
                 liveUrlsList.innerHTML = `
                     <div class="url-item">
-                        <input type="text" class="live-url" placeholder="直播源URL">
+                        <input type="text" class="live-url" placeholder="直播源Urls">
                         <button class="remove-url button-cancel">删除</button>
                     </div>
                 `;
@@ -1736,7 +1736,7 @@ cms.qdwght.com</textarea>
                 
                 config.lives.forEach((group, groupIndex) => {
                     const groupHeader = document.createElement('h4');
-                    groupHeader.textContent = `组: ${group.group}`;
+                    groupHeader.textContent = `组名: ${group.group}`;
                     groupHeader.style.marginTop = '20px';
                     groupHeader.style.marginBottom = '10px';
                     groupHeader.style.color = 'var(--primary-color)';
@@ -1751,12 +1751,12 @@ cms.qdwght.com</textarea>
                         
                         let urlsHtml = '';
                         channel.urls.forEach((url, urlIndex) => {
-                            urlsHtml += `<p>URL${urlIndex + 1}: ${url}</p>`;
+                            urlsHtml += `<p>Urls: ${url}</p>`;  // 修改这里，将URL1改为Urls
                         });
                         
                         item.innerHTML = `
                             <div style="flex: 1;">
-                                <p><strong>频道:</strong> ${channel.name}</p>
+                                <p><strong>频道名:</strong> ${channel.name}</p>
                                 ${urlsHtml}
                             </div>
                             <div class="channel-item-actions">
@@ -1791,7 +1791,7 @@ cms.qdwght.com</textarea>
                             const urlItem = document.createElement('div');
                             urlItem.className = 'url-item';
                             urlItem.innerHTML = `
-                                <input type="text" class="live-url" placeholder="直播源URL" value="${url}">
+                                <input type="text" class="live-url" placeholder="直播源Urls" value="${url}">
                                 <button class="remove-url button-cancel">删除</button>
                             `;
                             liveUrlsList.appendChild(urlItem);
@@ -1806,7 +1806,7 @@ cms.qdwght.com</textarea>
                             const urlItem = document.createElement('div');
                             urlItem.className = 'url-item';
                             urlItem.innerHTML = `
-                                <input type="text" class="live-url" placeholder="直播源URL">
+                                <input type="text" class="live-url" placeholder="直播源Urls">
                                 <button class="remove-url button-cancel">删除</button>
                             `;
                             liveUrlsList.appendChild(urlItem);
